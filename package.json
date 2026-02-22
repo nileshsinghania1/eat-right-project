@@ -10,10 +10,9 @@
   "dependencies": {
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
     "framer-motion": "^11.0.0",
     "lucide-react": "latest"
-    
   },
   "devDependencies": {
     "typescript": "latest",
