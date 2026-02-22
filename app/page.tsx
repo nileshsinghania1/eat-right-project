@@ -69,7 +69,7 @@ export default function Home() {
           whileInView={{ scale: [0.8, 1], rotate: [0, 2] }}
           className="relative z-30 w-full max-w-md px-10"
         >
-          <img src="/20260207_214106.jpg" alt="Nutty Chocolate Coco Bites" className="drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)]" />
+          <img src="/mainimage.png" alt="Nutty Chocolate Coco Bites" className="drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)]" />
         </motion.div>
 
         {/* Floating Ingredients - These appear as you scroll */}
