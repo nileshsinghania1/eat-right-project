@@ -1,84 +1,80 @@
 import React from 'react';
 
-// This is your Main Landing Page Component
-export default function LandingPage() {
+export default function EatRightLanding() {
   return (
-    <div className="min-h-screen bg-[#FCF9F5] text-[#3C2A21] font-sans selection:bg-green-200">
-      {/* 1. NAVIGATION */}
-      <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto">
-        <div className="text-xl font-black tracking-tighter border-2 border-[#3C2A21] px-2 py-1">
-          THE EAT RIGHT PROJECT
-        </div>
-        <div className="hidden md:flex gap-8 font-medium">
-          <a href="#story" className="hover:text-green-700">Our Story</a>
-          <a href="#ingredients" className="hover:text-green-700">Ingredients</a>
-        </div>
-        <button className="bg-[#3C2A21] text-white px-6 py-2 rounded-full font-bold hover:bg-green-800 transition-colors">
-          Order Now
+    <div className="min-h-screen bg-[#F4F1EA] text-[#4A3728] font-sans selection:bg-green-200">
+      {/* 1. URGENCY BAR */}
+      <div className="bg-[#3C2A21] text-white text-center py-2 text-sm font-bold tracking-widest uppercase">
+        🚀 Launch Offer: Free Shipping on all orders above ₹499!
+      </div>
+
+      {/* 2. NAVIGATION */}
+      <nav className="p-8 flex justify-between items-center max-w-7xl mx-auto">
+        <h1 className="text-2xl font-black italic tracking-tighter">THE EAT RIGHT PROJECT</h1>
+        <button className="bg-green-700 text-white px-8 py-3 rounded-full font-bold hover:bg-green-800 transition shadow-lg">
+          Buy Now
         </button>
       </nav>
 
-      {/* 2. HERO SECTION */}
-      <section className="px-6 py-16 md:py-28 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-        <div className="space-y-6">
-          <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-4 py-1 rounded-full text-sm font-bold">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            100% CLEAN LABEL
-          </div>
-          <h1 className="text-6xl md:text-8xl font-serif leading-tight">
-            Nutty Chocolate <br/> 
-            <span className="italic text-green-700 underline decoration-yellow-400">Coco Bites</span>
-          </h1>
-          <p className="text-xl text-gray-700 max-w-md leading-relaxed">
-            10 bites of pure energy. No added sugar, no preservatives, and 18% protein in every single bite.
-          </p>
-          <div className="pt-4">
-            <button className="bg-[#3C2A21] text-[#FCF9F5] text-2xl px-12 py-5 rounded-2xl font-bold shadow-2xl hover:scale-105 transition-transform active:scale-95">
-              Grab Your 100g Pack
-            </button>
-            <p className="mt-4 text-sm font-medium text-gray-500 italic">Made with Mother's Love ❤️</p>
-          </div>
-        </div>
-
-        {/* Product Visual */}
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-tr from-yellow-100 to-transparent rounded-full blur-3xl"></div>
-          <div className="relative bg-white p-8 rounded-[40px] shadow-2xl border border-stone-100">
-             {/* Replace this with your photo later */}
-             <div className="aspect-square bg-stone-50 rounded-2xl flex items-center justify-center border-2 border-dashed border-stone-200 text-stone-400">
-                [High Quality Image of the Bag Here]
-             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. THE "WHY" SECTION (India-Specific Trust Signals) */}
-      <section className="bg-white py-24">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { label: "Protein", val: "18%", sub: "Muscle Recovery" },
-            { label: "Sugar", val: "0%", sub: "No Added Junk" },
-            { label: "Bites", val: "10", sub: "Perfectly Portioned" },
-            { label: "Plant Based", val: "100%", sub: "Purely Veg" }
-          ].map((stat, i) => (
-            <div key={i} className="text-center p-6 border-r last:border-0 border-stone-100">
-              <h3 className="text-4xl font-serif font-bold text-green-700">{stat.val}</h3>
-              <p className="font-bold text-sm uppercase tracking-widest mt-2">{stat.label}</p>
-              <p className="text-xs text-stone-400">{stat.sub}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 4. INGREDIENTS LIST */}
-      <section id="ingredients" className="py-24 px-6 text-center max-w-4xl mx-auto">
-        <h2 className="text-3xl font-serif mb-12 italic">Just 4 Real Ingredients. Nothing Else.</h2>
-        <div className="flex flex-wrap justify-center gap-4">
-          {['Premium Dates', 'Roasted Almonds', 'Creamy Cashews', 'Pure Cocoa'].map((ing) => (
-            <span key={ing} className="px-8 py-4 bg-stone-100 rounded-full border border-stone-200 font-bold hover:bg-[#3C2A21] hover:text-white transition-colors cursor-default">
-              {ing}
+      {/* 3. HERO SECTION */}
+      <main className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center py-12">
+        <div className="space-y-8">
+          <div className="flex items-center gap-3">
+            <span className="bg-white border border-stone-200 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-stone-500">
+              Founder's Recipe 👩‍🍳
             </span>
-          ))}
+            <span className="bg-green-100 text-green-700 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
+              100% Natural
+            </span>
+          </div>
+          
+          <h2 className="text-6xl md:text-8xl font-serif leading-[0.9] text-[#3C2A21]">
+            Nutty Chocolate <br/>
+            <span className="italic text-green-700">Coco Bites</span>
+          </h2>
+
+          <p className="text-xl leading-relaxed text-stone-600 max-w-md">
+            The perfect 10g bite. Packed with dates, almonds, and cashews for instant energy. No preservatives. No added sugar. Just pure love.
+          </p>
+
+          <div className="flex flex-col gap-4 pt-4">
+            <button className="bg-[#3C2A21] text-white text-2xl py-6 px-12 rounded-2xl font-black shadow-2xl hover:scale-105 transition transform">
+              Order 100g Pack — ₹199
+            </button>
+            <p className="text-center md:text-left text-sm font-medium text-stone-400">
+              Contains 10 high-protein bites per pack.
+            </p>
+          </div>
+        </div>
+
+        {/* Product Visual Area */}
+        <div className="relative group">
+          <div className="absolute inset-0 bg-yellow-200 rounded-full blur-[120px] opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+          <div className="relative bg-white/50 backdrop-blur-sm p-12 rounded-[60px] border border-white/50 shadow-2xl">
+            <div className="aspect-square bg-stone-100 rounded-3xl flex items-center justify-center border-4 border-dashed border-stone-200">
+               <p className="text-stone-400 font-bold uppercase tracking-widest">Upload 20260207_214106.jpg Here</p>
+            </div>
+            {/* 18% Protein Badge */}
+            <div className="absolute -top-6 -right-6 bg-green-600 text-white w-32 h-32 rounded-full flex flex-col items-center justify-center shadow-2xl rotate-12 border-4 border-white">
+              <span className="text-3xl font-black">18%</span>
+              <span className="text-[10px] font-bold uppercase tracking-tighter text-center">Protein in <br/> every bite</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* 4. INGREDIENTS STRIP */}
+      <section className="bg-white py-20 mt-12">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-stone-400 mb-12">Only Clean Ingredients</h3>
+          <div className="flex flex-wrap justify-center gap-12">
+            {['Roasted Almonds', 'Creamy Cashews', 'Organic Dates', 'Pure Cocoa'].map((item) => (
+              <div key={item} className="group cursor-default">
+                <p className="text-2xl font-serif italic text-stone-800 group-hover:text-green-700 transition">{item}</p>
+                <div className="h-0.5 w-0 group-hover:w-full bg-green-700 transition-all duration-500 mx-auto mt-2"></div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>
