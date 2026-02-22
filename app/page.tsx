@@ -1,92 +1,112 @@
+"use client";
 import React from 'react';
+import { motion } from 'framer-motion';
+import { ChevronDown, ShoppingCart, Heart, Zap, Leaf } from 'lucide-react';
 
-export default function EatRightLanding() {
+export default function Home() {
   return (
-    <div className="min-h-screen bg-[#F4F1EA] text-[#4A3728] font-sans selection:bg-green-200">
-      {/* 1. URGENCY BAR */}
-      <div className="bg-[#3C2A21] text-white text-center py-2 text-sm font-bold tracking-widest uppercase">
-        🚀 Launch Offer: Free Shipping on all orders above ₹499!
-      </div>
-
-      {/* 2. NAVIGATION */}
-      <nav className="p-8 flex justify-between items-center max-w-7xl mx-auto">
-        <h1 className="text-2xl font-black italic tracking-tighter">THE EAT RIGHT PROJECT</h1>
-        <button className="bg-green-700 text-white px-8 py-3 rounded-full font-bold hover:bg-green-800 transition shadow-lg">
-          Buy Now
-        </button>
+    <div className="bg-[#FAF7F2] min-h-[300vh] text-[#3C2A21] font-sans selection:bg-green-200 overflow-x-hidden">
+      
+      {/* 1. FIXED NAVIGATION */}
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-stone-200 p-6 flex justify-between items-center px-10">
+        <motion.h1 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-xl font-black italic tracking-tighter"
+        >
+          THE EAT RIGHT PROJECT
+        </motion.h1>
+        <div className="flex items-center gap-6">
+          <button className="hidden md:block font-bold text-sm uppercase tracking-widest hover:text-green-700 transition">Our Story</button>
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-[#3C2A21] text-white px-8 py-3 rounded-full font-bold flex items-center gap-2 shadow-xl"
+          >
+            <ShoppingCart size={18} /> Shop Now
+          </motion.button>
+        </div>
       </nav>
 
-      {/* 3. HERO SECTION */}
-      <main className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center py-12">
-        <div className="space-y-8">
-          <div className="flex items-center gap-3">
-            <span className="bg-white border border-stone-200 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest text-stone-500">
-              Founder's Recipe 👩‍🍳
-            </span>
-            <span className="bg-green-100 text-green-700 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
-              100% Natural
-            </span>
-          </div>
-          
-          <h2 className="text-6xl md:text-8xl font-serif leading-[0.9] text-[#3C2A21]">
-            Nutty Chocolate <br/>
-            <span className="italic text-green-700">Coco Bites</span>
+      {/* 2. HERO SECTION */}
+      <section className="h-screen flex flex-col items-center justify-center pt-20 relative px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center z-10"
+        >
+          <span className="bg-green-100 text-green-700 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-6 inline-block">
+            Founders Recipe • 100% Clean
+          </span>
+          <h2 className="text-7xl md:text-9xl font-serif leading-none">
+            Clean Energy. <br/> <span className="italic text-green-700">Real Bites.</span>
           </h2>
+        </motion.div>
 
-          <p className="text-xl leading-relaxed text-stone-600 max-w-md">
-            The perfect 10g bite. Packed with dates, almonds, and cashews for instant energy. No preservatives. No added sugar. Just pure love.
-          </p>
+        {/* MOTHERS LOVE STAMP (Animated on scroll) */}
+        <motion.div 
+          style={{ rotate: 15 }}
+          whileInView={{ scale: [0, 1.2, 1], rotate: [15, -5, 10] }}
+          className="absolute right-10 top-1/2 bg-yellow-400 p-4 rounded-full border-2 border-[#3C2A21] shadow-2xl z-20"
+        >
+          <p className="font-black text-[10px] text-center uppercase leading-tight">Handcrafted with <br/> Mother's Love ❤️</p>
+        </motion.div>
 
-          <div className="flex flex-col gap-4 pt-4">
-            <button className="bg-[#3C2A21] text-white text-2xl py-6 px-12 rounded-2xl font-black shadow-2xl hover:scale-105 transition transform">
-              Order 100g Pack — ₹199
-            </button>
-            <p className="text-center md:text-left text-sm font-medium text-stone-400">
-              Contains 10 high-protein bites per pack.
-            </p>
-          </div>
-        </div>
+        <motion.div 
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="absolute bottom-10"
+        >
+          <ChevronDown size={32} className="opacity-30" />
+        </motion.div>
+      </section>
 
-        {/* Product Visual Area */}
-        <div className="relative group">
-          <div className="absolute inset-0 bg-yellow-200 rounded-full blur-[120px] opacity-30 group-hover:opacity-50 transition duration-1000"></div>
-          <div className="relative bg-white/50 backdrop-blur-sm p-12 rounded-[60px] border border-white/50 shadow-2xl">
-            <div className="aspect-square bg-stone-100 rounded-3xl flex items-center justify-center border-4 border-dashed border-stone-200">
-               <p className="text-stone-400 font-bold uppercase tracking-widest">Upload 20260207_214106.jpg Here</p>
-            </div>
-            {/* 18% Protein Badge */}
-            <div className="absolute -top-6 -right-6 bg-green-600 text-white w-32 h-32 rounded-full flex flex-col items-center justify-center shadow-2xl rotate-12 border-4 border-white">
-              <span className="text-3xl font-black">18%</span>
-              <span className="text-[10px] font-bold uppercase tracking-tighter text-center">Protein in <br/> every bite</span>
-            </div>
-          </div>
-        </div>
-      </main>
+      {/* 3. PRODUCT EXPLOSION (The "Magic" Section) */}
+      <section className="h-screen sticky top-0 flex items-center justify-center overflow-hidden">
+        {/* Central Product Image */}
+        <motion.div
+          whileInView={{ scale: [0.8, 1], rotate: [0, 2] }}
+          className="relative z-30 w-full max-w-md px-10"
+        >
+          <img src="/20260207_214106.jpg" alt="Nutty Chocolate Coco Bites" className="drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)]" />
+        </motion.div>
 
-      {/* 4. INGREDIENTS STRIP */}
-      <section className="bg-white py-20 mt-12">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-stone-400 mb-12">Only Clean Ingredients</h3>
-          <div className="flex flex-wrap justify-center gap-12">
-            {['Roasted Almonds', 'Creamy Cashews', 'Organic Dates', 'Pure Cocoa'].map((item) => (
-              <div key={item} className="group cursor-default">
-                <p className="text-2xl font-serif italic text-stone-800 group-hover:text-green-700 transition">{item}</p>
-                <div className="h-0.5 w-0 group-hover:w-full bg-green-700 transition-all duration-500 mx-auto mt-2"></div>
-              </div>
-            ))}
-          </div>
+        {/* Floating Ingredients - These appear as you scroll */}
+        {[
+          { icon: <Zap color="#FFD700" />, label: "Instant Energy", x: -300, y: -200 },
+          { icon: <Heart color="#FF6B6B" />, label: "No Added Sugar", x: 300, y: -150 },
+          { icon: <Leaf color="#4CAF50" />, label: "100% Plant Based", x: -280, y: 200 },
+          { icon: <span className="text-2xl font-black">18%</span>, label: "Protein Rich", x: 320, y: 180 },
+        ].map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1, x: item.x, y: item.y }}
+            transition={{ delay: i * 0.1, type: "spring", stiffness: 50 }}
+            className="absolute z-20 flex flex-col items-center gap-2 bg-white p-6 rounded-3xl shadow-2xl border border-stone-100"
+          >
+            {item.icon}
+            <p className="font-bold text-xs uppercase tracking-tighter whitespace-nowrap">{item.label}</p>
+          </motion.div>
+        ))}
+      </section>
+
+      {/* 4. THE INGREDIENTS STRIP */}
+      <section className="min-h-screen bg-[#3C2A21] text-white flex flex-col justify-center items-center py-40">
+        <h3 className="text-sm font-bold tracking-[0.4em] uppercase opacity-50 mb-20">Inside every 10g bite</h3>
+        <div className="flex flex-col gap-12 text-center">
+          {['Premium Dates', 'Roasted Almonds', 'Creamy Cashews', 'Pure Cocoa'].map((ing, i) => (
+            <motion.h4 
+              key={i}
+              whileInView={{ opacity: [0, 1], y: [20, 0] }}
+              className="text-5xl md:text-8xl font-serif italic hover:text-green-400 transition cursor-default"
+            >
+              {ing}
+            </motion.h4>
+          ))}
         </div>
       </section>
     </div>
   );
 }
-<video 
-  autoPlay 
-  loop 
-  muted 
-  playsInline 
-  poster="/20260207_214106.jpg" 
-  className="w-full h-full object-cover"
->
-  <source src="/hero_video.mp4" type="video/mp4" />
-</video>
