@@ -3,9 +3,41 @@
 @tailwind utilities;
 
 :root {
-  --font-serif: 'Playfair Display', serif;
+  color-scheme: light;
 }
 
-html {
-  scroll-behavior: smooth;
+html, body {
+  height: 100%;
+}
+
+body {
+  @apply bg-sand-50 text-sand-900;
+}
+
+.container {
+  @apply mx-auto max-w-6xl px-4;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition;
+}
+
+.btn-primary {
+  @apply bg-sand-800 text-sand-50 shadow-soft hover:bg-sand-900;
+}
+
+.btn-ghost {
+  @apply bg-white/60 hover:bg-white border border-sand-200;
+}
+
+.card {
+  @apply rounded-3xl border border-sand-200 bg-white/70 backdrop-blur shadow-soft;
+}
+
+.input {
+  @apply w-full rounded-2xl border border-sand-200 bg-white/80 px-4 py-3 outline-none focus:ring-2 focus:ring-sand-400;
+}
+
+.label {
+  @apply text-sm font-medium text-sand-700;
 }

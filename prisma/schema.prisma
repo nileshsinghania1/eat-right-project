@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  CREATED
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  status            OrderStatus @default(CREATED)
+
+  // customer + shipping
+  fullName          String
+  phone             String
+  email             String?
+  addressLine1      String
+  addressLine2      String?
+  city              String
+  state             String
+  pincode           String
+
+  qty               Int
+  freeQty           Int
+  chargeableQty     Int
+
+  amountPaise       Int
+  currency          String      @default("INR")
+
+  // Razorpay
+  razorpayOrderId   String?     @unique
+  razorpayPaymentId String?
+  razorpaySignature String?
+  receiptId         String?     @unique
+
+  notes             String?
+}
