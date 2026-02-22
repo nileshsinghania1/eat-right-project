@@ -80,3 +80,20 @@ export default function EatRightLanding() {
     </div>
   );
 }
+<div className="relative w-full h-[500px] overflow-hidden rounded-[40px] shadow-2xl border-8 border-white">
+  <video 
+    autoPlay 
+    loop 
+    muted 
+    playsInline 
+    className="absolute top-0 left-0 w-full h-full object-cover"
+  >
+    <source src="/hero-video.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+  
+  {/* The 18% Protein Badge floating on top of the video */}
+  <div className="absolute -bottom-6 -right-6 bg-green-600 text-white p-6 rounded-full shadow-2xl z-10">
+    <p className="text-center font-bold leading-none">18% <br/> <span className="text-[10px] uppercase">Protein</span></p>
+  </div>
+</div>
