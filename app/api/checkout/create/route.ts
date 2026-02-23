@@ -10,7 +10,10 @@ export async function POST(req: Request) {
     const payload = await req.json();
     const input = checkoutSchema.parse(payload);
 
-    const offer = calcOffer(input.qty);
+    const offer = calcOffer(input.qty, input.promoCode);
+if ((input.promoCode ?? "").trim() && !offer.promoApplied) {
+  return NextResponse.json({ error: "Invalid promo code" }, { status: 400 });
+}
     const amountPaise = inrToPaise(offer.subtotalInr);
 
     // Receipt id for reconciliation
@@ -19,6 +22,12 @@ export async function POST(req: Request) {
     // Create DB order first (CREATED)
     const order = await prisma.order.create({
       data: {
+        notes: JSON.stringify({
+  promoCode: offer.promoCode,
+  promoApplied: offer.promoApplied,
+  baseSubtotalInr: offer.baseSubtotalInr,
+  savingsInr: offer.savingsInr,
+}),
         receiptId,
         fullName: input.fullName,
         phone: input.phone,
@@ -42,12 +51,12 @@ export async function POST(req: Request) {
       amount: amountPaise,
       currency: "INR",
       receipt: order.receiptId!,
-      notes: {
-        orderId: order.id,
-        offer: "BUY2GET1",
-        qty: String(offer.qty),
-        freeQty: String(offer.free),
-      },
+      nnotes: {
+  orderId: order.id,
+  promoCode: offer.promoCode || "",
+  qty: String(offer.qty),
+  freeQty: String(offer.free),
+},
     });
 
     // Store razorpay order id
