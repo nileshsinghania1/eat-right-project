@@ -51,7 +51,7 @@ if ((input.promoCode ?? "").trim() && !offer.promoApplied) {
       amount: amountPaise,
       currency: "INR",
       receipt: order.receiptId!,
-      nnotes: {
+      notes: {
   orderId: order.id,
   promoCode: offer.promoCode || "",
   qty: String(offer.qty),
