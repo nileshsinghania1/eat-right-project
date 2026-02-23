@@ -26,7 +26,9 @@ async function loadRazorpay() {
 
 export function CheckoutClient() {
   const [qty, setQty] = useState(3);
-  const offer = useMemo(() => calcOffer(qty), [qty]);
+  const [promoInput, setPromoInput] = useState("");
+const [promoApplied, setPromoApplied] = useState("");
+const offer = useMemo(() => calcOffer(qty, promoApplied), [qty, promoApplied]);
 
   const form = useForm<CheckoutInput>({
     resolver: zodResolver(checkoutSchema),
@@ -40,6 +42,7 @@ export function CheckoutClient() {
       city: "",
       state: "",
       pincode: "",
+      promoCode: "",
     },
     mode: "onBlur",
   });
@@ -199,16 +202,76 @@ export function CheckoutClient() {
                 )}
               </div>
             </div>
+            <div className="mt-6 rounded-2xl border border-sand-200 bg-white p-4">
+  <div className="flex items-center justify-between">
+    <div>
+      <div className="font-medium">Promo code</div>
+      <div className="text-sm text-sand-700">
+        Enter a code to unlock offers (e.g., Buy 2 Get 1).
+      </div>
+    </div>
+  </div>
 
+  <div className="mt-3 flex gap-2">
+    <input
+      value={promoInput}
+      onChange={(e) => setPromoInput(e.target.value)}
+      placeholder="Enter promo code"
+      className="w-full rounded-xl border border-sand-200 bg-sand-50 px-3 py-2 outline-none focus:border-sand-400"
+    />
+    <button
+      type="button"
+      onClick={() => {
+        const code = promoInput.trim().toUpperCase();
+        setPromoApplied(code);
+        form.setValue("promoCode", code, { shouldValidate: true });
+      }}
+      className="shrink-0 rounded-xl bg-sand-900 px-4 py-2 text-white"
+    >
+      Apply
+    </button>
+
+    {promoApplied ? (
+      <button
+        type="button"
+        onClick={() => {
+          setPromoApplied("");
+          setPromoInput("");
+          form.setValue("promoCode", "", { shouldValidate: true });
+        }}
+        className="shrink-0 rounded-xl border border-sand-300 bg-white px-4 py-2 text-sand-900"
+      >
+        Remove
+      </button>
+    ) : null}
+  </div>
+
+  {promoApplied && !offer.promoApplied ? (
+    <div className="mt-2 text-sm text-red-600">
+      Invalid promo code. Please check and try again.
+    </div>
+  ) : null}
+
+  {offer.promoApplied ? (
+    <div className="mt-2 text-sm text-green-700">
+      Promo applied: <span className="font-semibold">{offer.promoCode}</span> — you
+      get {offer.free} free pack(s).
+    </div>
+  ) : null}
+</div>
+            
             <button className="btn btn-primary w-full" type="submit" disabled={busy}>
               {busy ? "Opening payment…" : `Pay ₹${offer.subtotalInr}`}
             </button>
 
-            <p className="text-xs text-sand-600">
-              You’re ordering <span className="font-medium">{offer.qty}</span> packs.
-              You get <span className="font-medium">{offer.free}</span> free.
-              Savings: <span className="font-medium">₹{offer.savingsInr}</span>.
-            </p>
+            <div className="text-sm text-sand-700">
+  You’re ordering {offer.qty} pack(s).
+  {offer.promoApplied ? (
+    <> You get {offer.free} free. Savings: ₹{offer.savingsInr}.</>
+  ) : (
+    <> Apply a promo code to unlock offers.</>
+  )}
+</div>
           </form>
         </div>
 
