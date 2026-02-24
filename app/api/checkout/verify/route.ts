@@ -4,35 +4,54 @@ import { prisma } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } =
-      await req.json();
+    const data = await req.json();
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !orderId) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    const razorpay_order_id = data?.razorpay_order_id;
+    const razorpay_payment_id = data?.razorpay_payment_id;
+    const razorpay_signature = data?.razorpay_signature;
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return NextResponse.json(
+        { error: "Missing Razorpay fields from client callback" },
+        { status: 400 }
+      );
     }
 
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      return NextResponse.json(
+        { error: "Server misconfigured: missing RAZORPAY_KEY_SECRET" },
+        { status: 500 }
+      );
+    }
+
+    // Verify signature (order_id|payment_id)
     const body = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expected = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(body)
       .digest("hex");
 
-    if (expected !== razorpay_signature) {
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { status: "FAILED", razorpayPaymentId: razorpay_payment_id, razorpaySignature: razorpay_signature },
-      });
-      return NextResponse.json({ ok: false }, { status: 400 });
+    const ok = expected === razorpay_signature;
+
+    // Optional DB update (only if DB configured)
+    if (process.env.DATABASE_URL) {
+      try {
+        await prisma.order.update({
+          where: { razorpayOrderId: razorpay_order_id },
+          data: {
+            status: ok ? "PAID" : "FAILED",
+            razorpayPaymentId: razorpay_payment_id,
+            razorpaySignature: razorpay_signature,
+          },
+        });
+      } catch {
+        // If the order isn't in DB yet, ignore for now
+      }
     }
 
-    await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        status: "PAID",
-        razorpayPaymentId: razorpay_payment_id,
-        razorpaySignature: razorpay_signature,
-      },
-    });
+    if (!ok) {
+      return NextResponse.json({ error: "Signature mismatch" }, { status: 400 });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err: any) {
