@@ -1,80 +1,57 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { checkoutSchema } from "@/lib/validators";
-import { calcOffer, inrToPaise } from "@/lib/pricing";
 import { prisma } from "@/lib/db";
-import { razorpayClient } from "@/lib/razorpay";
 
 export async function POST(req: Request) {
   try {
-    const payload = await req.json();
-    const input = checkoutSchema.parse(payload);
+    const data = await req.json();
 
-    // Promo-aware pricing
-    const offer = calcOffer(input.qty, input.promoCode);
+    const razorpay_order_id = data?.razorpay_order_id;
+    const razorpay_payment_id = data?.razorpay_payment_id;
+    const razorpay_signature = data?.razorpay_signature;
 
-    // If user typed something but it's not valid, reject.
-    if ((input.promoCode ?? "").trim() && !offer.promoApplied) {
-      return NextResponse.json({ error: "Invalid promo code" }, { status: 400 });
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return NextResponse.json(
+        { error: "Missing Razorpay fields from client callback" },
+        { status: 400 }
+      );
     }
 
-    const amountPaise = inrToPaise(offer.subtotalInr);
-    const receiptId = `rcpt_${crypto.randomBytes(8).toString("hex")}`;
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      return NextResponse.json(
+        { error: "Server misconfigured: missing RAZORPAY_KEY_SECRET" },
+        { status: 500 }
+      );
+    }
 
-    const razorpay = razorpayClient();
-    const razorpayOrder = await razorpay.orders.create({
-      amount: amountPaise,
-      currency: "INR",
-      receipt: receiptId,
-      notes: {
-        promoCode: offer.promoCode || "",
-        qty: String(offer.qty),
-        freeQty: String(offer.free),
-        chargeableQty: String(offer.chargeable),
-      },
-    });
+    const body = `${razorpay_order_id}|${razorpay_payment_id}`;
+    const expected = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(body)
+      .digest("hex");
 
-    // If DB isn't configured yet, still allow payments (frontend-only mode)
-    let orderId = receiptId;
+    const ok = expected === razorpay_signature;
 
+    // Optional DB update only when DATABASE_URL exists
     if (process.env.DATABASE_URL) {
-      const dbOrder = await prisma.order.create({
-        data: {
-          receiptId,
-          fullName: input.fullName,
-          phone: input.phone,
-          email: input.email || null,
-          addressLine1: input.addressLine1,
-          addressLine2: input.addressLine2 || null,
-          city: input.city,
-          state: input.state,
-          pincode: input.pincode,
-
-          qty: offer.qty,
-          freeQty: offer.free,
-          chargeableQty: offer.chargeable,
-          amountPaise,
-
-          razorpayOrderId: razorpayOrder.id,
-          notes: JSON.stringify({
-            promoApplied: offer.promoApplied,
-            promoCode: offer.promoCode || "",
-            baseSubtotalInr: offer.baseSubtotalInr,
-            subtotalInr: offer.subtotalInr,
-            savingsInr: offer.savingsInr,
-          }),
-        },
-        select: { id: true },
-      });
-
-      orderId = dbOrder.id;
+      try {
+        await prisma.order.update({
+          where: { razorpayOrderId: razorpay_order_id },
+          data: {
+            status: ok ? "PAID" : "FAILED",
+            razorpayPaymentId: razorpay_payment_id,
+            razorpaySignature: razorpay_signature,
+          },
+        });
+      } catch {
+        // ignore if order not stored yet
+      }
     }
 
-    return NextResponse.json({ orderId, razorpayOrder });
+    if (!ok) return NextResponse.json({ error: "Signature mismatch" }, { status: 400 });
+
+    return NextResponse.json({ ok: true });
   } catch (err: any) {
-    return NextResponse.json(
-      { error: err?.message ?? "Checkout failed" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: err?.message ?? "Error" }, { status: 400 });
   }
 }
