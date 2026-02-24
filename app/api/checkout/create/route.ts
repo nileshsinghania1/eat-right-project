@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     // Promo-aware pricing
     const offer = calcOffer(input.qty, input.promoCode);
 
-    // If user typed a code but it isn't valid, reject
+    // If code was entered but invalid, reject
     if ((input.promoCode ?? "").trim() && !offer.promoApplied) {
       return NextResponse.json({ error: "Invalid promo code" }, { status: 400 });
     }
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       },
     });
 
-    // For now (no DB), use receiptId as orderId
+    // No DB for now: use receiptId as internal orderId
     return NextResponse.json({ orderId: receiptId, razorpayOrder });
   } catch (err: any) {
     return NextResponse.json(
