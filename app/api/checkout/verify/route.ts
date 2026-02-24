@@ -1,60 +1,80 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { checkoutSchema } from "@/lib/validators";
+import { calcOffer, inrToPaise } from "@/lib/pricing";
 import { prisma } from "@/lib/db";
+import { razorpayClient } from "@/lib/razorpay";
 
 export async function POST(req: Request) {
   try {
-    const data = await req.json();
+    const payload = await req.json();
+    const input = checkoutSchema.parse(payload);
 
-    const razorpay_order_id = data?.razorpay_order_id;
-    const razorpay_payment_id = data?.razorpay_payment_id;
-    const razorpay_signature = data?.razorpay_signature;
+    // Promo-aware pricing
+    const offer = calcOffer(input.qty, input.promoCode);
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return NextResponse.json(
-        { error: "Missing Razorpay fields from client callback" },
-        { status: 400 }
-      );
+    // If user typed something but it's not valid, reject.
+    if ((input.promoCode ?? "").trim() && !offer.promoApplied) {
+      return NextResponse.json({ error: "Invalid promo code" }, { status: 400 });
     }
 
-    if (!process.env.RAZORPAY_KEY_SECRET) {
-      return NextResponse.json(
-        { error: "Server misconfigured: missing RAZORPAY_KEY_SECRET" },
-        { status: 500 }
-      );
-    }
+    const amountPaise = inrToPaise(offer.subtotalInr);
+    const receiptId = `rcpt_${crypto.randomBytes(8).toString("hex")}`;
 
-    // Verify signature (order_id|payment_id)
-    const body = `${razorpay_order_id}|${razorpay_payment_id}`;
-    const expected = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(body)
-      .digest("hex");
+    const razorpay = razorpayClient();
+    const razorpayOrder = await razorpay.orders.create({
+      amount: amountPaise,
+      currency: "INR",
+      receipt: receiptId,
+      notes: {
+        promoCode: offer.promoCode || "",
+        qty: String(offer.qty),
+        freeQty: String(offer.free),
+        chargeableQty: String(offer.chargeable),
+      },
+    });
 
-    const ok = expected === razorpay_signature;
+    // If DB isn't configured yet, still allow payments (frontend-only mode)
+    let orderId = receiptId;
 
-    // Optional DB update (only if DB configured)
     if (process.env.DATABASE_URL) {
-      try {
-        await prisma.order.update({
-          where: { razorpayOrderId: razorpay_order_id },
-          data: {
-            status: ok ? "PAID" : "FAILED",
-            razorpayPaymentId: razorpay_payment_id,
-            razorpaySignature: razorpay_signature,
-          },
-        });
-      } catch {
-        // If the order isn't in DB yet, ignore for now
-      }
+      const dbOrder = await prisma.order.create({
+        data: {
+          receiptId,
+          fullName: input.fullName,
+          phone: input.phone,
+          email: input.email || null,
+          addressLine1: input.addressLine1,
+          addressLine2: input.addressLine2 || null,
+          city: input.city,
+          state: input.state,
+          pincode: input.pincode,
+
+          qty: offer.qty,
+          freeQty: offer.free,
+          chargeableQty: offer.chargeable,
+          amountPaise,
+
+          razorpayOrderId: razorpayOrder.id,
+          notes: JSON.stringify({
+            promoApplied: offer.promoApplied,
+            promoCode: offer.promoCode || "",
+            baseSubtotalInr: offer.baseSubtotalInr,
+            subtotalInr: offer.subtotalInr,
+            savingsInr: offer.savingsInr,
+          }),
+        },
+        select: { id: true },
+      });
+
+      orderId = dbOrder.id;
     }
 
-    if (!ok) {
-      return NextResponse.json({ error: "Signature mismatch" }, { status: 400 });
-    }
-
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ orderId, razorpayOrder });
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message ?? "Error" }, { status: 400 });
+    return NextResponse.json(
+      { error: err?.message ?? "Checkout failed" },
+      { status: 400 }
+    );
   }
 }
