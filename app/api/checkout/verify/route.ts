@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { prisma } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
@@ -26,11 +27,25 @@ export async function POST(req: Request) {
 
     const body = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expected = crypto.createHmac("sha256", secret).update(body).digest("hex");
+    const ok = expected === razorpay_signature;
 
-    if (expected !== razorpay_signature) {
-      return NextResponse.json({ error: "Signature mismatch" }, { status: 400 });
+    if (process.env.DATABASE_URL) {
+      // Update order status in DB
+      try {
+        await prisma.order.update({
+          where: { razorpayOrderId: razorpay_order_id },
+          data: {
+            status: ok ? "PAID" : "FAILED",
+            razorpayPaymentId: razorpay_payment_id,
+            razorpaySignature: razorpay_signature,
+          },
+        });
+      } catch {
+        // If not found, don't crash verification response
+      }
     }
 
+    if (!ok) return NextResponse.json({ error: "Signature mismatch" }, { status: 400 });
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json({ error: err?.message ?? "Error" }, { status: 400 });
