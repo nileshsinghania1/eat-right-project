@@ -39,6 +39,7 @@ export async function POST(req: Request) {
         pincode: input.pincode,
         qty: offer.qty,
         freeQty: offer.free,
+        promoCode: offer.promoCode || null,
         chargeableQty: offer.chargeable,
         amountPaise,
         notes: JSON.stringify({
