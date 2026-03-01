@@ -10,7 +10,7 @@ export default function HeroMinimal() {
         {/* Background image (kept as close to original as possible) */}
         <div className="absolute inset-0">
           <Image
-            src="/hero/hero.jpg"
+            src="/hero/hero.png"
             alt="The Eat Right Project - Nutty Chocolate Coco Bites"
             fill
             priority
