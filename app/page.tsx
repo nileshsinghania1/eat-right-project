@@ -1,5 +1,5 @@
-import ScrollStory from "@/components/ScrollStory";
+import AppleStyleLanding from "@/components/AppleStyleLanding";
 
 export default function Page() {
-  return <ScrollStory />;
+  return <AppleStyleLanding />;
 }
