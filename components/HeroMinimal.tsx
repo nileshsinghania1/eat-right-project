@@ -10,7 +10,7 @@ export default function HeroMinimal() {
           alt="The Eat Right Project - Nutty Chocolate Coco Bites"
           fill
           priority
-          className="object-cover"
+          className="object-cover contrast-110 saturate-110"
         />
 
         {/* Dark overlays to blend the image seamlessly */}
@@ -25,8 +25,8 @@ export default function HeroMinimal() {
       </div>
 
       {/* Content */}
-      <div className="relative mx-auto flex min-h-screen max-w-6xl items-center px-6">
-        <div className="max-w-2xl">
+     <div className="relative mx-auto flex min-h-screen max-w-6xl items-center px-6 md:px-4">
+       <div className="max-w-2xl md:-translate-x-6">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs text-white/80 backdrop-blur">
             <span className="font-semibold tracking-wide">THE EAT RIGHT PROJECT</span>
