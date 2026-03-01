@@ -185,9 +185,9 @@ export default function AppleIngredientsStory() {
           </motion.div>
 
           <motion.div
-            className="relative flex items-center justify-center"
-            style={{ y, opacity, scale }}
-          >
+  className="relative flex items-center justify-center"
+  style={{ y: heroImgY, scale: heroImgScale }}
+>
             <div className="relative w-[320px] md:w-[430px]">
               <div className="absolute -inset-10 rounded-[48px] bg-white/5 blur-2xl" />
               <div className="relative rounded-[40px] border border-white/10 bg-white/5 p-6 backdrop-blur">
