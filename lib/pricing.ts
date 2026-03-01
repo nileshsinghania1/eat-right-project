@@ -7,8 +7,13 @@ export const PRODUCT = {
   tagline: "Instant energy • 18% protein in every bite",
 };
 
-const VALID_PROMOS = new Set(["B2G1", "BUY2GET1", "BUY2GET1FREE"]);
-
+const VALID_PROMOS = new Set([
+  "B2G1ARC",
+  "B2G1NIL",
+  "B2G1AAK",
+  "B2G1AJA",
+  "B2G1SRI",
+]);
 export function calcOffer(qty: number, promoCode?: string) {
   const normalized = (promoCode ?? "").trim().toUpperCase();
   const promoApplied = VALID_PROMOS.has(normalized);
