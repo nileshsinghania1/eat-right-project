@@ -79,8 +79,7 @@ function ChapterBlock({ c, index }: { c: Chapter; index: number }) {
   const y = useTransform(scrollYProgress, [0, 1], [30, -10]);
   const opacity = useTransform(scrollYProgress, [0, 0.25, 1], [0, 1, 1]);
   const scale = useTransform(scrollYProgress, [0, 1], [0.98, 1]);
-  const filter = useTransform(blur, (b) => `blur(${b}px)`);
-  return (
+    return (
     <div ref={ref} className="min-h-[78vh] flex items-center">
       <div className="w-full">
         <div className="text-xs uppercase tracking-[0.2em] text-white/55">
