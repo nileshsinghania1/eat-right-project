@@ -20,6 +20,7 @@ model Order {
   updatedAt         DateTime    @updatedAt
 
   status            OrderStatus @default(CREATED)
+promoCode String?
 
   // customer + shipping
   fullName          String
