@@ -14,9 +14,11 @@ export default function HeroMinimal() {
         />
 
         {/* Dark overlays to blend the image seamlessly */}
-        <div className="absolute inset-0 bg-neutral-950/55" />
-        <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/70 to-neutral-950/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-neutral-950/25" />
+        {/* Dark overlays tuned to keep text readable but let the image pop */}
+<div className="absolute inset-0 bg-neutral-950/35" />
+<div className="absolute inset-0 bg-gradient-to-r from-neutral-950/75 via-neutral-950/35 to-neutral-950/0" />
+<div className="absolute inset-0 bg-gradient-to-t from-neutral-950/60 via-transparent to-neutral-950/25" />
+<div className="absolute inset-0 [box-shadow:inset_0_0_140px_rgba(0,0,0,0.65)]" />
 
         {/* Subtle vignette */}
         <div className="absolute inset-0 [box-shadow:inset_0_0_160px_rgba(0,0,0,0.85)]" />
