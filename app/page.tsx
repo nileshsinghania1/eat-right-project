@@ -1,5 +1,5 @@
-import AppleStyleLanding from "@/components/AppleStyleLanding";
+import AppleIngredientsStory from "@/components/AppleIngredientsStory";
 
 export default function Page() {
-  return <AppleStyleLanding />;
+  return <AppleIngredientsStory />;
 }
