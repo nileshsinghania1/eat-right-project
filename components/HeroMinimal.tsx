@@ -4,7 +4,7 @@ export default function HeroMinimal() {
   return (
     <main className="bg-neutral-950 text-white">
       {/* =========================
-          SECTION 1: HERO (as you liked)
+          SECTION 1: HERO
          ========================= */}
       <section className="relative min-h-screen">
         {/* Background image (kept as close to original as possible) */}
@@ -17,14 +17,17 @@ export default function HeroMinimal() {
             className="object-cover"
           />
 
-          {/* Very subtle vignette (light) */}
+          {/* Very subtle vignette */}
           <div className="absolute inset-0 [box-shadow:inset_0_0_120px_rgba(0,0,0,0.35)]" />
 
           {/* Left scrim: darkens ONLY behind text so the photo stays true */}
           <div className="absolute inset-y-0 left-0 w-[72%] bg-gradient-to-r from-black/70 via-black/35 to-transparent md:w-[58%]" />
 
-          {/* Tiny bottom fade for polish */}
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/35 to-transparent" />
+          {/* Stronger bottom fade into the next black section */}
+          <div className="absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent" />
+
+          {/* Subtle noise (premium feel, avoids banding) */}
+          <div className="absolute inset-0 opacity-[0.06] mix-blend-overlay [background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22120%22 height=%22120%22 filter=%22url(%23n)%22 opacity=%220.55%22/%3E%3C/svg%3E')]" />
         </div>
 
         {/* Content */}
@@ -64,7 +67,10 @@ export default function HeroMinimal() {
       {/* =========================
           SECTION 2: FEATURES (next scroll)
          ========================= */}
-      <section className="bg-neutral-950">
+      <section className="relative bg-neutral-950">
+        {/* Top blend so the transition feels seamless */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-neutral-950 to-transparent" />
+
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-6 py-20 md:grid-cols-2">
           {/* Left: Product pack image (no boxes behind it) */}
           <div className="flex items-center justify-center">
@@ -74,7 +80,6 @@ export default function HeroMinimal() {
               width={720}
               height={720}
               className="h-auto w-full max-w-[520px] select-none"
-              priority={false}
             />
           </div>
 
