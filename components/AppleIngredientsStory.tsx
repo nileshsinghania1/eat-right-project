@@ -17,14 +17,14 @@ const CHAPTERS: Chapter[] = [
     eyebrow: "Ingredient 01",
     title: "Cashew.",
     subtitle: "Creamy body. Smooth bite. Clean energy.",
-    image: "/ingredients/cashewpng.png",
+    image: "/ingredients/cashewspng.png",
     alt: "Cashew",
   },
   {
     eyebrow: "Ingredient 02",
     title: "Almond.",
     subtitle: "Crunch + protein. A stronger snack base.",
-    image: "/ingredients/almonds.png",
+    image: "/ingredients/almondspng.png",
     alt: "Almonds",
   },
   {
@@ -38,14 +38,14 @@ const CHAPTERS: Chapter[] = [
     eyebrow: "Ingredient 04",
     title: "Cocoa.",
     subtitle: "Deep chocolate finish without the heaviness.",
-    image: "/ingredients/cocoa.png",
+    image: "/ingredients/cocoapowderpng.png",
     alt: "Cocoa powder",
   },
   {
     eyebrow: "Ingredient 05",
     title: "Coconut.",
     subtitle: "A clean aroma and soft texture balance.",
-    image: "/ingredients/coconut.png",
+    image: "/ingredients/coconutpng.png",
     alt: "Coconut",
   },
   // Optional: whey
@@ -53,7 +53,7 @@ const CHAPTERS: Chapter[] = [
   //   eyebrow: "Ingredient 06",
   //   title: "Whey.",
   //   subtitle: "Extra protein support for everyday performance.",
-  //   image: "/ingredients/whey.png",
+  //   image: "/ingredients/wheyproteinpng.png",
   //   alt: "Whey protein",
   // },
 ];
