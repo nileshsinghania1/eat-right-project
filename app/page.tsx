@@ -1,5 +1,5 @@
-import AppleIngredientsStory from "@/components/AppleIngredientsStory";
+import HeroMinimal from "@/components/HeroMinimal";
 
 export default function Page() {
-  return <AppleIngredientsStory />;
+  return <HeroMinimal />;
 }
