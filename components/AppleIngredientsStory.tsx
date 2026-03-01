@@ -79,8 +79,7 @@ function ChapterBlock({ c, index }: { c: Chapter; index: number }) {
   const y = useTransform(scrollYProgress, [0, 1], [30, -10]);
   const opacity = useTransform(scrollYProgress, [0, 0.25, 1], [0, 1, 1]);
   const scale = useTransform(scrollYProgress, [0, 1], [0.98, 1]);
-  const blur = useTransform(scrollYProgress, [0, 0.2, 1], [12, 0, 0]);
-
+  const filter = useTransform(blur, (b) => `blur(${b}px)`);
   return (
     <div ref={ref} className="min-h-[78vh] flex items-center">
       <div className="w-full">
@@ -97,7 +96,7 @@ function ChapterBlock({ c, index }: { c: Chapter; index: number }) {
         </p>
 
         <motion.div
-          style={{ y, opacity, scale, filter: blur.to((b) => `blur(${b}px)`) }}
+          style={{ y, opacity, scale, filter }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="mt-10 relative"
         >
