@@ -95,7 +95,7 @@ function ChapterBlock({ c, index }: { c: Chapter; index: number }) {
         </p>
 
         <motion.div
-          style={{ y, opacity, scale, filter }}
+          style={{ y, opacity, scale }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="mt-10 relative"
         >
