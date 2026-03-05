@@ -1,4 +1,5 @@
 // lib/notify.ts
+
 type OrderRow = {
   id: string;
   createdAt: Date;
@@ -16,32 +17,21 @@ type OrderRow = {
   amountPaise: number;
   razorpayOrderId: string | null;
   razorpayPaymentId: string | null;
+  promoCode?: string | null;
 };
 
 function inr(paise: number) {
   return `₹${(paise / 100).toFixed(2)}`;
 }
 
-export async function sendAdminEmail(order: OrderRow) {
+async function resendSend(args: {
+  from: string;
+  to: string[];
+  subject: string;
+  html: string;
+}) {
   const key = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM;
-  const to = process.env.ADMIN_EMAIL;
-
-  if (!key || !from || !to) return;
-
-  const subject = `New PAID order: ${order.fullName} (${inr(order.amountPaise)})`;
-
-  const html = `
-    <h2>New Paid Order</h2>
-    <p><b>Order ID:</b> ${order.id}</p>
-    <p><b>Amount:</b> ${inr(order.amountPaise)}</p>
-    <p><b>Qty:</b> ${order.qty} (Free: ${order.freeQty}, Charged: ${order.chargeableQty})</p>
-    <p><b>Name:</b> ${order.fullName}</p>
-    <p><b>Phone:</b> ${order.phone}</p>
-    <p><b>Email:</b> ${order.email ?? "-"}</p>
-    <p><b>Address:</b> ${order.addressLine1} ${order.addressLine2 ?? ""}, ${order.city}, ${order.state} - ${order.pincode}</p>
-    <p><b>Razorpay:</b> Order=${order.razorpayOrderId ?? "-"} Payment=${order.razorpayPaymentId ?? "-"}</p>
-  `;
+  if (!key) return;
 
   await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -49,21 +39,60 @@ export async function sendAdminEmail(order: OrderRow) {
       Authorization: `Bearer ${key}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject,
-      html,
-    }),
+    body: JSON.stringify(args),
+  });
+}
+
+export async function sendAdminEmail(order: OrderRow) {
+  const from = process.env.RESEND_FROM;
+  const to = process.env.ADMIN_EMAIL;
+  if (!from || !to) return;
+
+  const promoLine = order.promoCode ? `Promo: ${order.promoCode}` : "Promo: —";
+
+  const html = `
+  <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:#111; line-height:1.5;">
+    <div style="max-width:640px; margin:0 auto; padding:24px;">
+      <h2 style="margin:0 0 10px;">New PAID order ✅</h2>
+      <div style="padding:14px 16px; border:1px solid #eee; border-radius:14px; background:#fafafa;">
+        <p style="margin:0;"><b>Order ID:</b> ${order.id}</p>
+        <p style="margin:6px 0 0;"><b>Amount:</b> ${inr(order.amountPaise)}</p>
+        <p style="margin:6px 0 0;"><b>Qty:</b> ${order.qty} (Free: ${
+    order.freeQty
+  }, Charged: ${order.chargeableQty})</p>
+        <p style="margin:6px 0 0;"><b>${promoLine}</b></p>
+      </div>
+
+      <h3 style="margin:18px 0 8px;">Customer</h3>
+      <p style="margin:0;"><b>Name:</b> ${order.fullName}</p>
+      <p style="margin:6px 0 0;"><b>Phone:</b> ${order.phone}</p>
+      <p style="margin:6px 0 0;"><b>Email:</b> ${order.email ?? "-"}</p>
+
+      <h3 style="margin:18px 0 8px;">Shipping</h3>
+      <p style="margin:0;">
+        ${order.addressLine1}${order.addressLine2 ? `, ${order.addressLine2}` : ""}
+        , ${order.city}, ${order.state} - ${order.pincode}
+      </p>
+
+      <h3 style="margin:18px 0 8px;">Razorpay</h3>
+      <p style="margin:0;"><b>Order:</b> ${order.razorpayOrderId ?? "-"}</p>
+      <p style="margin:6px 0 0;"><b>Payment:</b> ${order.razorpayPaymentId ?? "-"}</p>
+    </div>
+  </div>
+  `;
+
+  await resendSend({
+    from,
+    to: [to],
+    subject: `New paid order: ${order.fullName} (${inr(order.amountPaise)})`,
+    html,
   });
 }
 
 export async function sendCustomerEmail(order: OrderRow) {
-  const key = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM;
-  if (!key || !from || !order.email) return;
+  if (!from || !order.email) return;
 
-  const amount = inr(order.amountPaise);
   const qtyLine =
     order.freeQty && order.freeQty > 0
       ? `${order.qty} pack(s) (includes ${order.freeQty} free)`
@@ -72,7 +101,6 @@ export async function sendCustomerEmail(order: OrderRow) {
   const html = `
   <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:#111; line-height:1.5;">
     <div style="max-width:560px; margin:0 auto; padding:24px;">
-      
       <div style="font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:#666;">
         The Eat Right Project
       </div>
@@ -93,7 +121,7 @@ export async function sendCustomerEmail(order: OrderRow) {
           </div>
           <div style="text-align:right;">
             <div style="font-size:13px; color:#555;">Amount paid</div>
-            <div style="font-size:16px; font-weight:700;">${amount}</div>
+            <div style="font-size:16px; font-weight:700;">${inr(order.amountPaise)}</div>
           </div>
         </div>
 
@@ -117,7 +145,7 @@ export async function sendCustomerEmail(order: OrderRow) {
       </p>
 
       <p style="margin:10px 0 0; color:#333;">
-        Need help? Reach out to us on WhatsApp at +91 9836179444.
+        Need help? Reach out to us on WhatsApp at +91 9836179444 !
       </p>
 
       <div style="margin-top:22px; border-top:1px solid #eee; padding-top:14px; font-size:12px; color:#888;">
@@ -127,18 +155,10 @@ export async function sendCustomerEmail(order: OrderRow) {
   </div>
   `;
 
-  await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: [order.email],
-      subject: "Order confirmed ✅ — The Eat Right Project",
-      html,
-    }),
+  await resendSend({
+    from,
+    to: [order.email],
+    subject: "Order confirmed ✅ — The Eat Right Project",
+    html,
   });
-}
 }
