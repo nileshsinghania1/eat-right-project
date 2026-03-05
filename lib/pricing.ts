@@ -15,22 +15,24 @@ const VALID_PROMOS = new Set([
   "B2G1SRI",
 ]);
 export function calcOffer(qty: number, promoCode?: string) {
+  const SHIPPING_INR_SINGLE = 40;
+
+export function calcOffer(qty: number, promoCode?: string) {
   const normalized = (promoCode ?? "").trim().toUpperCase();
   const promoApplied = VALID_PROMOS.has(normalized);
 
-  // Only apply Buy2Get1 when promo code is applied
   const free = promoApplied ? Math.floor(qty / 3) : 0;
-
   const chargeable = qty - free;
 
-  // What the customer would pay without any promo
   const baseSubtotalInr = qty * PRODUCT.priceInr;
-
-  // What the customer pays after promo (if applied)
   const subtotalInr = chargeable * PRODUCT.priceInr;
-
-  // Savings only when promo is applied
   const savingsInr = baseSubtotalInr - subtotalInr;
+
+  // ✅ Shipping: qty 2+ => Free, qty 1 => ₹40
+  const shippingInr = qty >= 2 ? 0 : SHIPPING_INR_SINGLE;
+
+  // ✅ Total customer pays
+  const totalInr = subtotalInr + shippingInr;
 
   return {
     qty,
@@ -41,7 +43,10 @@ export function calcOffer(qty: number, promoCode?: string) {
     baseSubtotalInr,
     subtotalInr,
     savingsInr,
+    shippingInr,
+    totalInr,
   };
+}
 }
 
 export function inrToPaise(inr: number) {
