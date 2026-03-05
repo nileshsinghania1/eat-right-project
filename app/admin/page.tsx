@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Navbar } from "@/components/Navbar";
+import  Navbar  from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
 export const dynamic = "force-dynamic";
