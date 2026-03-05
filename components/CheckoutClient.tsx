@@ -27,8 +27,9 @@ async function loadRazorpay() {
 export function CheckoutClient() {
   const [qty, setQty] = useState(3);
   const [promoInput, setPromoInput] = useState("");
-const [promoApplied, setPromoApplied] = useState("");
-const offer = useMemo(() => calcOffer(qty, promoApplied), [qty, promoApplied]);
+  const [promoApplied, setPromoApplied] = useState("");
+
+  const offer = useMemo(() => calcOffer(qty, promoApplied), [qty, promoApplied]);
 
   const form = useForm<CheckoutInput>({
     resolver: zodResolver(checkoutSchema),
@@ -47,7 +48,6 @@ const offer = useMemo(() => calcOffer(qty, promoApplied), [qty, promoApplied]);
     mode: "onBlur",
   });
 
-  // keep qty in sync
   function setQtySafe(n: number) {
     const next = Math.max(1, Math.min(60, n));
     setQty(next);
@@ -91,23 +91,25 @@ const offer = useMemo(() => calcOffer(qty, promoApplied), [qty, promoApplied]);
       prefill: {
         name: values.fullName,
         contact: values.phone,
-        email: values.email || undefined,
+        email: values.email,
       },
       notes: {
         orderId,
-        offer: "BUY2GET1",
+        promoCode: values.promoCode || "",
       },
       handler: async (response: any) => {
         const vr = await fetch("/api/checkout/verify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...response, orderId }),
+          body: JSON.stringify({ ...response }),
         });
 
         if (vr.ok) {
           window.location.href = `/success?orderId=${orderId}`;
         } else {
-          alert("Payment verification failed. If money was deducted, contact support.");
+          alert(
+            "Payment verification failed. If money was deducted, contact support."
+          );
         }
       },
       theme: { color: "#6f4f3e" },
@@ -124,57 +126,99 @@ const offer = useMemo(() => calcOffer(qty, promoApplied), [qty, promoApplied]);
       <div className="grid gap-8 md:grid-cols-2 md:items-start">
         <div className="card p-6 md:p-8">
           <h1 className="text-2xl font-semibold tracking-tight">Checkout</h1>
-          
 
           <div className="mt-6 flex items-center justify-between rounded-2xl border border-sand-200 bg-white/70 p-4">
             <div>
               <p className="font-semibold">{PRODUCT.name}</p>
-              <p className="text-sm text-sand-700">₹{PRODUCT.priceInr} • {PRODUCT.weight}</p>
+              <p className="text-sm text-sand-700">
+                ₹{PRODUCT.priceInr} • {PRODUCT.weight}
+              </p>
             </div>
             <div className="flex items-center gap-2">
-              <button className="btn btn-ghost px-3 py-2" onClick={() => setQtySafe(qty - 1)} type="button">−</button>
+              <button
+                className="btn btn-ghost px-3 py-2"
+                onClick={() => setQtySafe(qty - 1)}
+                type="button"
+              >
+                −
+              </button>
               <span className="w-10 text-center font-semibold">{qty}</span>
-              <button className="btn btn-ghost px-3 py-2" onClick={() => setQtySafe(qty + 1)} type="button">+</button>
+              <button
+                className="btn btn-ghost px-3 py-2"
+                onClick={() => setQtySafe(qty + 1)}
+                type="button"
+              >
+                +
+              </button>
             </div>
           </div>
 
           <form className="mt-6 space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <div>
               <label className="label">Full name</label>
-              <input className="input" {...form.register("fullName")} placeholder="Your name" />
+              <input
+                className="input"
+                {...form.register("fullName")}
+                placeholder="Your name"
+              />
               {form.formState.errors.fullName && (
-                <p className="mt-1 text-xs text-red-700">{form.formState.errors.fullName.message}</p>
+                <p className="mt-1 text-xs text-red-700">
+                  {form.formState.errors.fullName.message}
+                </p>
               )}
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <label className="label">Mobile number</label>
-                <input className="input" {...form.register("phone")} placeholder="10-digit number" />
+                <input
+                  className="input"
+                  {...form.register("phone")}
+                  placeholder="10-digit number"
+                />
                 {form.formState.errors.phone && (
-                  <p className="mt-1 text-xs text-red-700">{form.formState.errors.phone.message}</p>
+                  <p className="mt-1 text-xs text-red-700">
+                    {form.formState.errors.phone.message}
+                  </p>
                 )}
               </div>
               <div>
-                <label className="label">Email (optional)</label>
-                <input className="input" {...form.register("email")} placeholder="name@email.com" />
+                <label className="label">Email</label>
+                <input
+                  className="input"
+                  type="email"
+                  {...form.register("email")}
+                  placeholder="name@email.com"
+                />
                 {form.formState.errors.email && (
-                  <p className="mt-1 text-xs text-red-700">{form.formState.errors.email.message}</p>
+                  <p className="mt-1 text-xs text-red-700">
+                    {form.formState.errors.email.message}
+                  </p>
                 )}
               </div>
             </div>
 
             <div>
               <label className="label">Address line 1</label>
-              <input className="input" {...form.register("addressLine1")} placeholder="House no, street, area" />
+              <input
+                className="input"
+                {...form.register("addressLine1")}
+                placeholder="House no, street, area"
+              />
               {form.formState.errors.addressLine1 && (
-                <p className="mt-1 text-xs text-red-700">{form.formState.errors.addressLine1.message}</p>
+                <p className="mt-1 text-xs text-red-700">
+                  {form.formState.errors.addressLine1.message}
+                </p>
               )}
             </div>
 
             <div>
               <label className="label">Address line 2 (optional)</label>
-              <input className="input" {...form.register("addressLine2")} placeholder="Landmark, apartment, etc." />
+              <input
+                className="input"
+                {...form.register("addressLine2")}
+                placeholder="Landmark, apartment, etc."
+              />
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
@@ -182,94 +226,101 @@ const offer = useMemo(() => calcOffer(qty, promoApplied), [qty, promoApplied]);
                 <label className="label">City</label>
                 <input className="input" {...form.register("city")} />
                 {form.formState.errors.city && (
-                  <p className="mt-1 text-xs text-red-700">{form.formState.errors.city.message}</p>
+                  <p className="mt-1 text-xs text-red-700">
+                    {form.formState.errors.city.message}
+                  </p>
                 )}
               </div>
               <div>
                 <label className="label">State</label>
                 <input className="input" {...form.register("state")} />
                 {form.formState.errors.state && (
-                  <p className="mt-1 text-xs text-red-700">{form.formState.errors.state.message}</p>
+                  <p className="mt-1 text-xs text-red-700">
+                    {form.formState.errors.state.message}
+                  </p>
                 )}
               </div>
               <div>
                 <label className="label">Pincode</label>
                 <input className="input" {...form.register("pincode")} />
                 {form.formState.errors.pincode && (
-                  <p className="mt-1 text-xs text-red-700">{form.formState.errors.pincode.message}</p>
+                  <p className="mt-1 text-xs text-red-700">
+                    {form.formState.errors.pincode.message}
+                  </p>
                 )}
               </div>
             </div>
+
+            {/* Promo code */}
             <div className="mt-6 rounded-2xl border border-sand-200 bg-white p-4">
-  <div className="flex items-center justify-between">
-    <div>
-      <div className="font-medium">Promo code</div>
-      <div className="text-sm text-sand-700">
-        Enter a code to unlock offers (e.g., Buy 2 Get 1).
-      </div>
-    </div>
-  </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Promo code</div>
+                  <div className="text-sm text-sand-700">
+                    Enter a promo code to unlock offers.
+                  </div>
+                </div>
+              </div>
 
-  <div className="mt-3 flex gap-2">
-    <input
-      value={promoInput}
-      onChange={(e) => setPromoInput(e.target.value)}
-      placeholder="Enter promo code"
-      className="w-full rounded-xl border border-sand-200 bg-sand-50 px-3 py-2 outline-none focus:border-sand-400"
-    />
-    <button
-      type="button"
-      onClick={() => {
-        const code = promoInput.trim().toUpperCase();
-        setPromoApplied(code);
-        form.setValue("promoCode", code, { shouldValidate: true });
-      }}
-      className="shrink-0 rounded-xl bg-sand-900 px-4 py-2 text-white"
-    >
-      Apply
-    </button>
+              <div className="mt-3 flex gap-2">
+                <input
+                  value={promoInput}
+                  onChange={(e) => setPromoInput(e.target.value)}
+                  placeholder="Enter promo code"
+                  className="w-full rounded-xl border border-sand-200 bg-sand-50 px-3 py-2 outline-none focus:border-sand-400"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const code = promoInput.trim().toUpperCase();
+                    setPromoApplied(code);
+                    form.setValue("promoCode", code, { shouldValidate: true });
+                  }}
+                  className="shrink-0 rounded-xl bg-sand-900 px-4 py-2 text-white"
+                >
+                  Apply
+                </button>
 
-    {promoApplied ? (
-      <button
-        type="button"
-        onClick={() => {
-          setPromoApplied("");
-          setPromoInput("");
-          form.setValue("promoCode", "", { shouldValidate: true });
-        }}
-        className="shrink-0 rounded-xl border border-sand-300 bg-white px-4 py-2 text-sand-900"
-      >
-        Remove
-      </button>
-    ) : null}
-  </div>
+                {promoApplied ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPromoApplied("");
+                      setPromoInput("");
+                      form.setValue("promoCode", "", { shouldValidate: true });
+                    }}
+                    className="shrink-0 rounded-xl border border-sand-300 bg-white px-4 py-2 text-sand-900"
+                  >
+                    Remove
+                  </button>
+                ) : null}
+              </div>
 
-  {promoApplied && !offer.promoApplied ? (
-    <div className="mt-2 text-sm text-red-600">
-      Invalid promo code. Please check and try again.
-    </div>
-  ) : null}
+              {promoApplied && !offer.promoApplied ? (
+                <div className="mt-2 text-sm text-red-600">
+                  Invalid promo code. Please check and try again.
+                </div>
+              ) : null}
 
-  {offer.promoApplied ? (
-    <div className="mt-2 text-sm text-green-700">
-      Promo applied: <span className="font-semibold">{offer.promoCode}</span> — you
-      get {offer.free} free pack(s).
-    </div>
-  ) : null}
-</div>
-            
+              {offer.promoApplied ? (
+                <div className="mt-2 text-sm text-green-700">
+                  Promo applied:{" "}
+                  <span className="font-semibold">{offer.promoCode}</span> — you
+                  get {offer.free} free pack(s).
+                </div>
+              ) : null}
+            </div>
+
             <button className="btn btn-primary w-full" type="submit" disabled={busy}>
-              {busy ? "Opening payment…" : `Pay ₹${offer.subtotalInr}`}
+              {busy ? "Opening payment…" : `Pay ₹${offer.totalInr}`}
             </button>
 
             <div className="text-sm text-sand-700">
-  You’re ordering {offer.qty} pack(s).
-  {offer.promoApplied ? (
-    <> You get {offer.free} free. Savings: ₹{offer.savingsInr}.</>
-  ) : (
-    <> Apply a promo code to unlock offers.</>
-  )}
-</div>
+              You’re ordering {offer.qty} pack(s).
+              {offer.promoApplied ? (
+                <> You get {offer.free} free. Savings: ₹{offer.savingsInr}.</>
+              ) : null}
+            </div>
           </form>
         </div>
 
@@ -289,14 +340,22 @@ const offer = useMemo(() => calcOffer(qty, promoApplied), [qty, promoApplied]);
                 <span>Payable packs</span>
                 <span>{offer.chargeable}</span>
               </div>
-              <div className="flex justify-between border-t border-sand-200 pt-3 font-semibold">
-                <span>Total</span>
+
+              <div className="flex justify-between">
+                <span>Subtotal</span>
                 <span>₹{offer.subtotalInr}</span>
               </div>
+
+              <div className="flex justify-between">
+                <span>Shipping</span>
+                <span>{offer.shippingInr === 0 ? "Free" : `₹${offer.shippingInr}`}</span>
+              </div>
+
+              <div className="flex justify-between border-t border-sand-200 pt-3 font-semibold">
+                <span>Total</span>
+                <span>₹{offer.totalInr}</span>
+              </div>
             </div>
-            <p className="mt-4 text-xs text-sand-600">
-              Shipping is configured server-side. Add your shipping policy later (free above ₹X, flat fee under ₹X, etc.).
-            </p>
           </div>
 
           <div className="card p-6 md:p-8">
@@ -304,7 +363,7 @@ const offer = useMemo(() => calcOffer(qty, promoApplied), [qty, promoApplied]);
             <ul className="mt-3 space-y-2 text-sm text-sand-700">
               <li>• Secure payments (UPI / Cards / Netbanking)</li>
               <li>• Order saved instantly after payment</li>
-              <li>• Add WhatsApp confirmation in the next step</li>
+              <li>• Email confirmation after payment</li>
             </ul>
           </div>
         </div>
