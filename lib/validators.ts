@@ -15,7 +15,7 @@ export const checkoutSchema = z.object({
   phone: z
     .string()
     .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
-  email: z.string().email().optional().or(z.literal("")),
+  email: z.string().email("Enter a valid email address"),
   addressLine1: z.string().min(5).max(120),
   addressLine2: z.string().max(120).optional().or(z.literal("")),
   city: z.string().min(2).max(60),
