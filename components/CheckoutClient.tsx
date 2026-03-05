@@ -124,9 +124,7 @@ const offer = useMemo(() => calcOffer(qty, promoApplied), [qty, promoApplied]);
       <div className="grid gap-8 md:grid-cols-2 md:items-start">
         <div className="card p-6 md:p-8">
           <h1 className="text-2xl font-semibold tracking-tight">Checkout</h1>
-          <p className="mt-2 text-sm text-sand-700">
-            Offer applies automatically: Buy 2 get 1 free.
-          </p>
+          
 
           <div className="mt-6 flex items-center justify-between rounded-2xl border border-sand-200 bg-white/70 p-4">
             <div>
