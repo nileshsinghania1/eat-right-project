@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const amountPaise = inrToPaise(offer.subtotalInr);
+    const amountPaise = inrToPaise(offer.totalInr);
     const receiptId = `rcpt_${crypto.randomBytes(8).toString("hex")}`;
 
     // 1) Create DB order first (so every payment has an order record)
