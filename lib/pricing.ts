@@ -14,28 +14,31 @@ const VALID_PROMOS = new Set([
   "B2G1AJA",
   "B2G1SRI",
 ]);
-export function calcOffer(qty: number, promoCode?: string) {
-  const SHIPPING_INR_SINGLE = 40;
+
+const SHIPPING_INR_SINGLE = 40;
 
 export function calcOffer(qty: number, promoCode?: string) {
+  // keep qty safe
+  const q = Number.isFinite(qty) ? Math.max(1, Math.min(60, Math.floor(qty))) : 1;
+
   const normalized = (promoCode ?? "").trim().toUpperCase();
-  const promoApplied = VALID_PROMOS.has(normalized);
+  const promoApplied = normalized.length > 0 && VALID_PROMOS.has(normalized);
 
-  const free = promoApplied ? Math.floor(qty / 3) : 0;
-  const chargeable = qty - free;
+  const free = promoApplied ? Math.floor(q / 3) : 0;
+  const chargeable = q - free;
 
-  const baseSubtotalInr = qty * PRODUCT.priceInr;
+  const baseSubtotalInr = q * PRODUCT.priceInr;
   const subtotalInr = chargeable * PRODUCT.priceInr;
   const savingsInr = baseSubtotalInr - subtotalInr;
 
-  // ✅ Shipping: qty 2+ => Free, qty 1 => ₹40
-  const shippingInr = qty >= 2 ? 0 : SHIPPING_INR_SINGLE;
+  // Shipping rule: qty >= 2 => Free, qty == 1 => ₹40
+  const shippingInr = q >= 2 ? 0 : SHIPPING_INR_SINGLE;
 
-  // ✅ Total customer pays
+  // Total customer pays
   const totalInr = subtotalInr + shippingInr;
 
   return {
-    qty,
+    qty: q,
     promoApplied,
     promoCode: promoApplied ? normalized : "",
     free,
@@ -46,7 +49,6 @@ export function calcOffer(qty: number, promoCode?: string) {
     shippingInr,
     totalInr,
   };
-}
 }
 
 export function inrToPaise(inr: number) {
