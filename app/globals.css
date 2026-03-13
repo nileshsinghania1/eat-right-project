@@ -2,42 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
+@layer base {
+  html, body { height: 100%; }
+  body {
+    @apply bg-neutral-900 text-white antialiased;
+  }
 }
 
-html, body {
-  height: 100%;
+/* Feastables-like grain + glow background utility */
+@layer utilities {
+  .brand-bg {
+    background:
+      radial-gradient(1200px 600px at 20% 10%, rgba(255, 220, 180, 0.12), transparent),
+      radial-gradient(900px 500px at 80% 30%, rgba(255, 140, 80, 0.10), transparent),
+      radial-gradient(700px 400px at 60% 80%, rgba(255, 255, 255, 0.06), transparent),
+      #171717;
+  }
+
+  .brand-grain {
+    position: relative;
+  }
+  .brand-grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22120%22 height=%22120%22 filter=%22url(%23n)%22 opacity=%220.55%22/%3E%3C/svg%3E");
+  }
 }
 
-body {
-  @apply bg-sand-50 text-sand-900;
-}
+@layer components {
+  .container {
+    @apply mx-auto max-w-6xl px-6;
+  }
 
-.container {
-  @apply mx-auto max-w-6xl px-4;
-}
+  .card {
+    @apply rounded-3xl border border-white/10 bg-white/5 backdrop-blur;
+  }
 
-.btn {
-  @apply inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition;
-}
+  .btn {
+    @apply inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-semibold transition;
+  }
+  .btn-primary {
+    @apply bg-white text-neutral-950 hover:opacity-90;
+  }
+  .btn-ghost {
+    @apply border border-white/15 bg-white/5 text-white hover:bg-white/10;
+  }
 
-.btn-primary {
-  @apply bg-sand-800 text-sand-50 shadow-soft hover:bg-sand-900;
-}
+  .label {
+    @apply text-xs uppercase tracking-[0.18em] text-white/60;
+  }
 
-.btn-ghost {
-  @apply bg-white/60 hover:bg-white border border-sand-200;
-}
-
-.card {
-  @apply rounded-3xl border border-sand-200 bg-white/70 backdrop-blur shadow-soft;
-}
-
-.input {
-  @apply w-full rounded-2xl border border-sand-200 bg-white/80 px-4 py-3 outline-none focus:ring-2 focus:ring-sand-400;
-}
-
-.label {
-  @apply text-sm font-medium text-sand-700;
+  .input {
+    @apply w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/45 outline-none focus:border-white/25;
+  }
 }
