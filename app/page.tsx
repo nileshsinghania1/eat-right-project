@@ -1,5 +1,5 @@
-import HeroMinimal from "@/components/HeroMinimal";
+import HeroFeastables from "@/components/HeroFeastables";
 
 export default function Page() {
-  return <HeroMinimal />;
+  return <HeroFeastables />;
 }
